@@ -1,5 +1,5 @@
 # 1. ENVIRONMENT & PATH
-export ADASTRIA_ROOT="$HOME/adastria"
+export ASTRALIA_ROOT="$HOME/astralia"
 export -U PATH="$HOME/.local/bin:$PATH"
 
 # 2. SHELL OPTIONS & HISTORY
@@ -68,13 +68,13 @@ run() {
 # 7. ALIASES
 alias grep="grep --color=auto"
 alias ls="ls --color=auto"
-alias update="$ADASTRIA_ROOT/scripts/update"
+alias update="$ASTRALIA_ROOT/scripts/update"
 
 # 8. EXTERNAL SOURCING
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 CONDA_SRC="/opt/miniconda3/etc/profile.d/conda.sh"
 [ -f "$CONDA_SRC" ] && source "$CONDA_SRC"
-for f in "$ADASTRIA_ROOT/source/"*.sh(N); do source "$f"; done
+for f in "$ASTRALIA_ROOT/source/"*.sh(N); do source "$f"; done
 
 # 9. STARTUP EXECUTION
 greet

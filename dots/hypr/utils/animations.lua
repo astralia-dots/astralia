@@ -5,7 +5,7 @@ local M = {}
 local function state_path()
 	local home = os.getenv("HOME")
 	local state_home = os.getenv("XDG_STATE_HOME") or (home .. "/.local/state")
-	return state_home .. "/adastria/animations"
+	return state_home .. "/astralia/animations"
 end
 
 local function read_enabled()
