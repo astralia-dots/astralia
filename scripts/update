@@ -132,7 +132,7 @@ update_ramfs() {
 
     echo "detected modules: ${mods[*]:-none}"
     local dst; dst=$(join_r "$1" "/etc/mkinitcpio.conf")
-    printf 'MODULES=(%s)\n\nHOOKS=(base systemd plymouth plymouth-shutdown autodetect microcode modconf %skeyboard sd-vconsole block filesystems fsck)\n\nCOMPRESSION="lz4"\n' \
+    printf 'MODULES=(%s)\n\nHOOKS=(base systemd plymouth plymouth-shutdown autodetect microcode modconf %skeyboard sd-vconsole block filesystems fsck)\n\nCOMPRESSION="gzip"\n' \
         "${mods[*]}" "$kms_hook" | sudoc "$1" tee "$dst" >/dev/null
     echo "rebuilding initramfs"
     sudoc "$1" mkinitcpio -P
