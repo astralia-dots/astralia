@@ -196,7 +196,7 @@ end
 -- ===========
 -- KEYBINDINGS
 -- ===========
-require("utils.bind")(V, B, T, L, Anim)
+require("utils.keybinds")(V, B, T, L, Anim)
 
 -- ======
 -- DEVICE
