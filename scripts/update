@@ -189,13 +189,15 @@ update_bin() {
 }
 
 update_symlinks() {
-    local dirs=(/usr/bin /usr/local/bin)
-    local all_broken=()
+    local T="${STOW_TARGET:-$HOME}"
+    local dirs=(/usr/bin /usr/local/bin /usr/share/applications "$T/.config" "$T/.zshrc" "$T/.gtkrc-2.0")
+    local all_broken=() dir broken depth
     for dir in "${dirs[@]}"; do
-        local broken=($(find "$dir" -maxdepth 1 -xtype l 2>/dev/null))
+        depth=(-maxdepth 1); [[ "$dir" == "$T/.config" ]] && depth=()
+        mapfile -d '' broken < <(find "$dir" "${depth[@]}" -xtype l -print0 2>/dev/null)
         (( ${#broken[@]} == 0 )) && continue
         echo "$dir:"
-        printf '  %s\n' "${broken[@]##*/}"
+        printf '  %s\n' "${broken[@]}"
         all_broken+=("${broken[@]}")
     done
     (( ${#all_broken[@]} == 0 )) && { echo "No broken symlinks found."; return; }
