@@ -20,7 +20,7 @@ trap 'fail' ERR
 req_cmd() { command -v "$1" &>/dev/null || die "Missing cmd: $1"; }
 req_dir() { [[ -d "$1" ]] || die "Missing dir: $1"; }
 join_r() { [[ "$1" == "/" ]] && echo "$2" || echo "${1%/}$2"; }
-sudoc() { local r="$1"; shift; [[ "$r" == "/" ]] && sudo "$@" || "$@"; }
+sudoc() { local r="$1"; shift; if [[ "$r" == "/" ]]; then sudo "$@"; else "$@"; fi; }
 ini_get() { grep -m1 -oP "(?<=^$2=).*" "$1"; }
 
 _unlink() {
