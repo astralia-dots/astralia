@@ -5,6 +5,11 @@
 # state, xwayland scaling) were intentionally dropped.
 
 # ===========
+# DISPLAY
+# ===========
+output "*" scale 1
+
+# ===========
 # VARIABLES
 # ===========
 set $mod Mod4
