@@ -1,0 +1,118 @@
+# SWAY CONFIG
+# Translated from astralia/dots/hypr (decorations + keybinds only).
+# Scrollumns layout binds, per-monitor workspace grouping, and decoration
+# options with no Sway equivalent (rounding, blur, gradients, opacity
+# state, xwayland scaling) were intentionally dropped.
+
+# ===========
+# VARIABLES
+# ===========
+set $mod Mod4
+set $term kitty
+set $browser zen-browser
+set $editor code
+set $filemanager kitty yazi
+set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && grim -g "$(slurp)" $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
+set $shell astralia
+
+# ===========
+# APPEARANCE
+# ===========
+default_border pixel 5
+default_floating_border pixel 5
+gaps inner 10
+gaps outer 20
+
+# class                 border   background text    indicator child_border
+client.focused          #7B2FE8  #7B2FE8    #FFFFFF #7B2FE8   #7B2FE8
+client.focused_inactive #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
+client.unfocused        #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
+
+for_window [app_id="code-oss"] opacity 0.7
+for_window [class="code-oss"] opacity 0.7
+
+# ===========
+# SHELL
+# ===========
+bindsym $mod+d exec $shell dock
+bindsym $mod+i exec $shell settings
+bindsym $mod+l exec $shell lock
+bindsym $mod+m exec $shell rain
+bindsym $mod+q exec $shell logout
+bindsym $mod+Tab exec $shell overview
+bindsym $mod+Shift+a exec $shell bar-all
+bindsym $mod+Shift+c exec $shell dashboard
+bindsym $mod+Shift+d exec $shell dock-all
+bindsym $mod+Shift+v exec $shell visualizer
+bindsym Shift+space exec $shell launcher
+
+# ===========
+# WINDOW STATE
+# ===========
+# Hyprland split monocle/maximize from true fullscreen; Sway has a single
+# fullscreen concept, so both collapse onto this one bind.
+bindsym $mod+f fullscreen toggle
+bindsym $mod+v floating toggle
+
+# ===========
+# APPS
+# ===========
+bindsym $mod+b exec $browser
+bindsym $mod+c exec $editor
+bindsym $mod+e exec $filemanager
+bindsym $mod+Shift+k exec $editor $HOME/astralia
+bindsym $mod+Shift+s exec $screenshot
+bindsym $mod+t exec $term
+
+# ===========
+# WINDOW OPERATIONS
+# ===========
+bindsym $mod+Down focus down
+bindsym $mod+Left focus left
+bindsym $mod+Right focus right
+bindsym $mod+Up focus up
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+Up move up
+bindsym $mod+w kill
+
+# ===========
+# WORKSPACES (flattened to global 1-10)
+# ===========
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+# ===========
+# MEDIA
+# ===========
+bindsym --locked XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-
+bindsym --locked XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bindsym --locked XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 1%+
+bindsym --locked XF86MonBrightnessDown exec brightnessctl -e4 -n2 set 1%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 1%+
+
+# ===========
+# MOUSE
+# ===========
+floating_modifier $mod
