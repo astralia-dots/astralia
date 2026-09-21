@@ -72,7 +72,6 @@ DESKTOP_PKGS=(
     foot
     hyprshot
     imagemagick
-    kitty
     libnotify
     mpv
 )

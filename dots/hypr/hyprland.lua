@@ -30,7 +30,7 @@ V.root = V.home .. "/astralia"
 V.wpm = B.WPM
 
 -- Applications
-V.terminal = "kitty "
+V.terminal = "terminal "
 V.browser = "zen-browser "
 V.editor = "code "
 V.filemanager = V.terminal .. "yazi "

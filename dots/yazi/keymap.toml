@@ -20,8 +20,8 @@ desk = "Open current directory in VS Code"
 
 [[mgr.prepend_keymap]]
 on = "<A-t>"
-run = "shell 'kitty .' --orphan"
-desk = "Open current directory in Kitty"
+run = "shell terminal --orphan"
+desk = "Open current directory in terminal"
 
 [[mgr.prepend_keymap]]
 on = "<C-M>"
@@ -75,7 +75,7 @@ desc = "Move to bottom"
 
 [[mgr.prepend_keymap]]
 on = "<S-Right>"
-run = 'shell "kitty --directory \"$1\" yazi" --orphan'
+run = 'shell "cd \"$1\" && terminal yazi" --orphan'
 desc = "Open directory in new window"
 
 [[mgr.prepend_keymap]]

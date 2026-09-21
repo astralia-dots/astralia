@@ -23,7 +23,7 @@ zstyle ':completion:*' menu select
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # 4. CORE FUNCTIONS
-fetch() { command -v fastfetch &>/dev/null && { local a; [[ $TERM == foot* ]] && a=(--logo-type sixel) || a=(); fastfetch $a; }; }
+fetch() { command -v fastfetch &>/dev/null && fastfetch; }
 message() {
   printf '\e[38;2;155;87;244m'
   cat <<'EOF' | sed 's/^/      /'

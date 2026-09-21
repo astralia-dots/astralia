@@ -13,10 +13,10 @@ output "*" scale 1
 # VARIABLES
 # ===========
 set $mod Mod4
-set $term foot
+set $term terminal
 set $browser zen-browser
 set $editor code
-set $filemanager foot yazi
+set $filemanager terminal yazi
 set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && grim -g "$(slurp)" $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
 set $shell astralia
 
