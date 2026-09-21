@@ -7,7 +7,7 @@ TN="Keqing"
 SD="$R/scripts"
 TD="$R/system/themes"
 
-MODS=(all bin cmdline cursor font gtk grub plymouth sddm sudo symlinks vscode yazi splash ramfs checkroot stow)
+MODS=(all apps bin cmdline cursor font gtk grub plymouth sddm sudo symlinks vscode yazi splash ramfs checkroot stow)
 
 BIN_IGNORE=()
 
@@ -188,6 +188,20 @@ update_bin() {
     fi
 }
 
+update_apps() {
+    local src="$R/system/apps" dst; dst=$(join_r "$1" "/usr/local/bin")
+    req_dir "$src"
+
+    local f
+    if [[ "$2" -eq 1 ]]; then
+        for f in "$src"/*; do [[ -f "$f" ]] && _unlink "$dst/${f##*/}"; done
+    else
+        sudoc "$1" mkdir -p "$dst"
+        for f in "$src"/*; do [[ -f "$f" ]] && _link "$f" "$dst/${f##*/}"; done
+    fi
+    return 0
+}
+
 update_symlinks() {
     local T="${STOW_TARGET:-$HOME}"
     local dirs=(/usr/bin /usr/local/bin /usr/share/applications "$T/.config" "$T/.zshrc" "$T/.gtkrc-2.0")
@@ -277,7 +291,7 @@ update_splash() {
 }
 
 update_all() {
-    local mods=(stow sudo font cursor gtk bin vscode yazi splash)
+    local mods=(stow sudo font cursor gtk bin apps vscode yazi splash)
     local m
     for m in "${mods[@]}"; do
         echo "  -> update $m"
@@ -343,7 +357,7 @@ case "$mod" in
     stow) update_stow "$TR" "$rm" ;;
     sudo|font|cursor|gtk|ramfs|vscode) "update_$mod" "$TR" ;;
     symlinks) update_symlinks ;;
-    bin|yazi|sddm) "update_$mod" "$TR" "$rm" ;;
+    apps|bin|yazi|sddm) "update_$mod" "$TR" "$rm" ;;
     plymouth) update_plymouth "$TR" "$rm" "$norebuild" ;;
     cmdline) update_cmdline "$TR" "$norebuild" ;;
     splash) update_splash "$TR" ;;

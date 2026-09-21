@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ "${DESKTOP_SESSION:-}" == "hyprland" ]] && browser=zen-browser || browser=falkon
+exec "$browser" "$@"

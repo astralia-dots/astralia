@@ -14,11 +14,11 @@ output "*" scale 1
 # ===========
 set $mod Mod4
 set $term terminal
-set $browser falkon
-set $editor code
-set $filemanager terminal yazi
+set $browser browser
+set $editor editor
+set $filemanager file-manager
 set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && grim -g "$(slurp)" $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
-set $shell astralia
+set $shell desktop-shell
 
 # ===========
 # APPEARANCE
@@ -39,8 +39,8 @@ for_window [class="code-oss"] opacity 0.7
 # ===========
 # AUTOSTART
 # ===========
-exec foot --server
-exec astralia
+exec $term --server
+exec $shell
 
 # ===========
 # SHELL

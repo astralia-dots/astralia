@@ -31,13 +31,13 @@ V.wpm = B.WPM
 
 -- Applications
 V.terminal = "terminal "
-V.browser = "zen-browser "
-V.editor = "code "
-V.filemanager = V.terminal .. "yazi "
+V.browser = "browser "
+V.editor = "editor "
+V.filemanager = "file-manager "
 V.screenshot = "bash -c 'mkdir -p $HOME/Pictures/screenshots/ && hyprshot --freeze -m region -o $HOME/Pictures/screenshots/'"
 
 -- Keqing-shell IPC Calls
-V.shell = "astralia "
+V.shell = "desktop-shell "
 
 -- =====================
 -- ENVIRONMENT VARIABLES
