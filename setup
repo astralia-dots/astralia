@@ -26,12 +26,16 @@ CORE_PKGS=(
 )
 
 COMPOSITOR_PKGS=(
+    grim
     hyprland
     plymouth
     qt6-multimedia
+    slurp
+    sway
     wl-clipboard
     xdg-desktop-portal
     xdg-desktop-portal-hyprland
+    xdg-desktop-portal-wlr
     xdg-utils
 )
 
@@ -65,6 +69,7 @@ FONT_PKGS=(
 
 DESKTOP_PKGS=(
     desktop-file-utils
+    foot
     hyprshot
     imagemagick
     kitty

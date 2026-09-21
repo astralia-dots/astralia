@@ -13,10 +13,10 @@ output "*" scale 1
 # VARIABLES
 # ===========
 set $mod Mod4
-set $term kitty
+set $term foot
 set $browser zen-browser
 set $editor code
-set $filemanager kitty yazi
+set $filemanager foot yazi
 set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && grim -g "$(slurp)" $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
 set $shell astralia
 
@@ -35,6 +35,12 @@ client.unfocused        #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
 
 for_window [app_id="code-oss"] opacity 0.7
 for_window [class="code-oss"] opacity 0.7
+
+# ===========
+# AUTOSTART
+# ===========
+exec foot --server
+exec astralia
 
 # ===========
 # SHELL
