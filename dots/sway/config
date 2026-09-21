@@ -127,5 +127,6 @@ bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 1%+
 # ===========
 # MOUSE
 # ===========
+seat * xcursor_theme Keqing 24
 floating_modifier $mod
 input type:touchpad natural_scroll enabled
