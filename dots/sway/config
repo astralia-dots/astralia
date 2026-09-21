@@ -41,6 +41,7 @@ for_window [class="code-oss"] opacity 0.7
 # ===========
 exec $term --server
 exec $shell
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # ===========
 # SHELL
@@ -127,3 +128,4 @@ bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 1%+
 # MOUSE
 # ===========
 floating_modifier $mod
+input type:touchpad natural_scroll enabled
