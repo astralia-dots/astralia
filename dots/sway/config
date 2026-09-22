@@ -25,8 +25,8 @@ set $shell desktop-shell
 # ===========
 default_border pixel 5
 default_floating_border pixel 5
-gaps inner 10
-gaps outer 20
+gaps inner 20
+gaps outer 0
 
 # class                 border   background text    indicator child_border
 client.focused          #7B2FE8  #7B2FE8    #FFFFFF #7B2FE8   #7B2FE8
