@@ -129,11 +129,12 @@ update_ramfs() {
     $has_intel  && { has_other=true; mods+=(i915); }
 
     local kms_hook="kms "; $has_nvidia && ! $has_other && kms_hook=""
+    local plymouth_hooks=""; command -v plymouth-set-default-theme &>/dev/null && plymouth_hooks="plymouth plymouth-shutdown "
 
     echo "detected modules: ${mods[*]:-none}"
     local dst; dst=$(join_r "$1" "/etc/mkinitcpio.conf")
-    printf 'MODULES=(%s)\n\nHOOKS=(base systemd plymouth plymouth-shutdown autodetect microcode modconf %skeyboard sd-vconsole block filesystems fsck)\n\nCOMPRESSION="gzip"\n' \
-        "${mods[*]}" "$kms_hook" | sudoc "$1" tee "$dst" >/dev/null
+    printf 'MODULES=(%s)\n\nHOOKS=(base systemd %sautodetect microcode modconf %skeyboard sd-vconsole block filesystems fsck)\n\nCOMPRESSION="gzip"\n' \
+        "${mods[*]}" "$plymouth_hooks" "$kms_hook" | sudoc "$1" tee "$dst" >/dev/null
     echo "rebuilding initramfs"
     sudoc "$1" mkinitcpio -P
 }
@@ -266,7 +267,10 @@ update_cmdline() {
 }
 
 update_plymouth() {
-    req_cmd plymouth-set-default-theme
+    if ! command -v plymouth-set-default-theme &>/dev/null; then
+        echo "plymouth not installed, skipping"
+        return 0
+    fi
     local dst_t; dst_t=$(join_r "$1" "/usr/share/plymouth/themes/$TN")
 
     if [[ "$2" -eq 1 ]]; then
