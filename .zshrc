@@ -1,28 +1,33 @@
 # 1. ENVIRONMENT & PATH
 export ASTRALIA_ROOT="$HOME/astralia"
 export -U PATH="$HOME/.local/bin:$PATH"
+export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
+CONDA_SRC="/opt/miniconda3/etc/profile.d/conda.sh"
 
 # 2. SHELL OPTIONS & HISTORY
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
 setopt appendhistory
+unsetopt prompt_sp
 typeset -g _hist_cmd=""
+
+# 3. AUTOCOMPLETION & PLUGINS
+autoload -Uz compinit
+_zdump=(~/.zcompdump(N.mh-24))
+if (( $#_zdump )); then compinit -C; else compinit; fi
+unset _zdump
+zstyle ':completion:*' menu select
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# 4. FUNCTIONS
 zshaddhistory() { return 1; }
-preexec() { _hist_cmd="$1"; }
+preexec() { _hist_cmd="$1"; setopt prompt_sp; }
 precmd() {
   local s=$?
   [[ $s -eq 0 && -n "$_hist_cmd" ]] && print -s -- "$_hist_cmd"
   _hist_cmd=""
 }
-
-# 3. AUTOCOMPLETION & PLUGINS
-autoload -Uz compinit
-compinit
-zstyle ':completion:*' menu select
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-# 4. CORE FUNCTIONS
 fetch() { command -v fastfetch &>/dev/null && fastfetch; }
 message() {
   printf '\e[38;2;155;87;244m'
@@ -55,8 +60,6 @@ edit() {
   local dir
   dir=$(_find "$1") && code "$dir"
 }
-
-# 5. DEVELOPMENT TOOLS
 clearpycache() { find . -type d -name "__pycache__" -exec rm -rf {} +; }
 own() { sudo chown -R $USER $1; }
 run() {
@@ -64,21 +67,26 @@ run() {
   [[ "$filename" == *.c ]] && compiler="gcc"
   $compiler "$filename" -o main && ./main
 }
+[ -f "$CONDA_SRC" ] && conda() { unfunction conda; source "$CONDA_SRC" && conda "$@"; }
+_cached_init() {
+  local bin=$commands[$1] f=~/.cache/zsh/$1.zsh
+  [[ -n $bin ]] || return
+  [[ $f -nt $bin ]] || { mkdir -p ${f:h}; "$@" >| $f; }
+  source $f
+}
 
-# 7. ALIASES
+# 5. ALIASES
 alias grep="grep --color=auto"
 alias ls="ls --color=auto"
 alias update="$ASTRALIA_ROOT/scripts/update"
 
-# 8. EXTERNAL SOURCING
-export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
-CONDA_SRC="/opt/miniconda3/etc/profile.d/conda.sh"
-[ -f "$CONDA_SRC" ] && source "$CONDA_SRC"
+# 6. EXTERNAL SOURCING
 for f in "$ASTRALIA_ROOT/source/"*.sh(N); do source "$f"; done
 
-# 9. STARTUP EXECUTION
+# 7. STARTUP EXECUTION
 greet
 
-# 10. EXTERNAL TOOL INITIALIZATION
-command -v starship &>/dev/null && eval "$(starship init zsh)"
-command -v zoxide &>/dev/null && eval "$(zoxide init zsh --cmd cd)"
+# 8. EXTERNAL TOOL INITIALIZATION
+_cached_init starship init zsh --print-full-init
+_cached_init zoxide init zsh --cmd cd
+unfunction _cached_init

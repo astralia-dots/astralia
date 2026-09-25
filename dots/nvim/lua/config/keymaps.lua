@@ -1,11 +1,21 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
-
--- Close all buffers and return to the dashboard
+-- Close all file buffers into the dashboard, leaving Claude/explorer panes alone. Dashboard
+-- first: bufdelete refills emptied windows with the Claude terminal, and a windowless
+-- Snacks.dashboard() is a fullscreen float that hides everything opened after it
 vim.keymap.set("n", "<leader>ba", function()
-  Snacks.bufdelete.all()
-  Snacks.dashboard()
+  local function is_file(b)
+    return vim.bo[b].buftype == ""
+  end
+  local wins = vim.tbl_filter(function(w)
+    return vim.api.nvim_win_get_config(w).relative == "" and is_file(vim.api.nvim_win_get_buf(w))
+  end, vim.api.nvim_tabpage_list_wins(0))
+  if not wins[1] then
+    return Snacks.notify.warn("No editor window for the dashboard")
+  end
+  for i = 2, #wins do
+    vim.api.nvim_win_close(wins[i], false)
+  end
+  Snacks.dashboard({ win = wins[1] })
+  Snacks.bufdelete.delete({ filter = is_file })
 end, { desc = "Close All Buffers (Dashboard)" })
 
 -- Ctrl+Left/Right move the split border in the arrow's direction, so a right-edge
