@@ -1,9 +1,28 @@
 -- ~/.local/bin is only on PATH in interactive zsh, so nvim launched from a
 -- keybind/launcher can't find `claude`; point at the binary directly
+local claude_bin = vim.fn.expand("~/.local/bin/claude")
+
+-- Run a :ClaudeCode* command only if Claude Code is installed
+local function gated(cmd)
+	return function()
+		if vim.fn.executable(claude_bin) == 1 then
+			vim.cmd(cmd)
+		else
+			vim.notify("Claude Code is not installed", vim.log.levels.WARN, { title = "Claude" })
+		end
+	end
+end
+
 return {
 	"coder/claudecode.nvim",
+	keys = {
+		{ "<leader>ac", gated("ClaudeCode"), desc = "Toggle Claude" },
+		{ "<leader>af", gated("ClaudeCodeFocus"), desc = "Focus Claude" },
+		{ "<leader>ar", gated("ClaudeCode --resume"), desc = "Resume Claude" },
+		{ "<leader>aC", gated("ClaudeCode --continue"), desc = "Continue Claude" },
+	},
 	opts = {
-		terminal_cmd = vim.fn.expand("~/.local/bin/claude"),
+		terminal_cmd = claude_bin,
 		terminal = {
 			split_width_percentage = 0.4,
 			auto_insert = false, -- open/focus the pane in normal mode; press i to type
