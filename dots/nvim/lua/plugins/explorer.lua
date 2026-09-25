@@ -7,6 +7,10 @@ return {
       vim.fn.chdir(dir) -- snacks' dashboard already shows for a single directory arg
     end
   end,
+  keys = {
+    { "<leader><space>", false },
+    { "<C-p>", function() LazyVim.pick("files")() end, desc = "Find Files (Root Dir)" },
+  },
   opts = {
     explorer = { replace_netrw = false }, -- don't auto-open the explorer for directories
     picker = {
@@ -16,7 +20,7 @@ return {
           win = {
             list = {
               keys = {
-                ["<M-Left>"] = "explorer_close", -- collapse directory (VSCode muscle memory)
+                ["<M-Left>"] = "explorer_close_all", -- collapse all directories (VSCode muscle memory)
                 ["<BS>"] = false, -- don't climb out of the project root
               },
             },
