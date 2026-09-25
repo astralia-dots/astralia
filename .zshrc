@@ -38,7 +38,7 @@ message() {
 EOF
   printf '\e[0m'
 }
-greet() { [[ -z "$TERM_PROGRAM" && -z "$TERMINAL_EMULATOR" ]] && { message; fetch; }; }
+greet() { [[ -z "$TERM_PROGRAM" && -z "$TERMINAL_EMULATOR" && -z "$NVIM" ]] && { message; fetch; }; }
 clear() { command clear 2>/dev/null || printf '\033[H\033[2J\033[3J'; greet; }
 _find() {
   command -v fzf &>/dev/null || return 1
