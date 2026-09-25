@@ -26,6 +26,9 @@ return {
 		terminal = {
 			split_width_percentage = 0.4,
 			auto_insert = false, -- open/focus the pane in normal mode; press i to type
+			-- LazyVim gives every Snacks terminal Ctrl+/ = hide, which hid Claude instead of
+			-- toggling the shell terminal; drop them so the global Ctrl+/ map applies here
+			snacks_win_opts = { keys = { hide_slash = false, hide_underscore = false } },
 		},
 	},
 	init = function()

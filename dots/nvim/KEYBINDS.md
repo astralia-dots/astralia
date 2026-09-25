@@ -29,7 +29,7 @@ Leader is `Space`. Press it and wait for which-key to list everything.
 | `Ctrl+Shift+O` | `Space s s` | Go to symbol |
 | Split editor | `Space \|` / `Space -` | Split vertical / horizontal |
 | Focus pane | `Ctrl+h/j/k/l` | Move between splits |
-| Resize pane | `Ctrl+Left` / `Ctrl+Right` | Make the focused pane narrower / wider (works on the explorer too) |
+| Resize pane | `Ctrl+Left` / `Ctrl+Right` | Move the focused pane's border left / right (flips for right-edge panels like Claude; works on the explorer too) |
 | Resize pane | `Ctrl+Up` / `Ctrl+Down` | Taller / shorter |
 | Source control | `Space g g` | Lazygit |
 | `Alt+↑` / `Alt+↓` | `Alt+k` / `Alt+j` | Move line / selection |
@@ -107,5 +107,5 @@ Operators `d` delete, `c` change, `y` yank (copy) combine with any motion or tex
 | `Space a s` (visual) | Send selection |
 | `Space a a` | Accept diff |
 | `Space a d` | Deny diff |
-| `Ctrl+Left/Right/Up/Down` | Resize the panel while typing in it (custom terminal-mode maps) |
+| `Ctrl+Left/Right/Up/Down` | Resize the panel while typing in it (Left widens it, since it sits on the right) |
 | `Ctrl+\ Ctrl+N` | Leave the input (terminal → normal mode); `i` to type again |
