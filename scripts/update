@@ -43,20 +43,30 @@ _link() {
 # Stows one package with its own source root, target and ignore pattern,
 # falling back to removing conflicting (stale/foreign) targets on dry-run
 # conflict before restowing for real.
+# Usage: _stow_pkg pkg src tgt mode log [files...] -- [stow args...]
+# Only the listed files (relative to src) are cleaned; none listed = all of src.
 _stow_pkg() {
     local pkg="$1" src="$2" tgt="$3" mode="$4" log="$5"; shift 5
-    stow -d "$R" -t "$tgt" --"$mode" -n -v "$pkg" "$@" >"$log" 2>&1 || {
-        grep -q "conflict\|existing target" "$log" || die "stow dry-run failed ($pkg):\n$(cat "$log")"
-        find "$src" -mindepth 1 -name '.git' -prune -o -type f -print0 | while IFS= read -r -d '' s; do
-            local t="$tgt/${s#$src/}"
+    local files=()
+    while [[ $# -gt 0 && "$1" != "--" ]]; do files+=("$src/$1"); shift; done
+    [[ "${1:-}" == "--" ]] && shift
+    if ! stow -d "$R" -t "$tgt" --"$mode" -n -v "$pkg" "$@" >"$log" 2>&1; then
+        grep -q "conflict\|existing target" "$log" || die "stow dry-run failed ($pkg):"$'\n'"$(cat "$log")"
+        local s t
+        [[ ${#files[@]} -gt 0 ]] || mapfile -d '' files < <(find "$src" -mindepth 1 -name '.git' -prune -o -type f -print0)
+        for s in "${files[@]}"; do
+            t="$tgt/${s#$src/}"
             if [[ -L "$t" ]]; then
-                [[ $(readlink -f "$t" 2>/dev/null) != $(readlink -f "$s" 2>/dev/null) ]] && { echo "removing conflicting symlink: $t"; rm -f "$t"; }
+                if [[ $(readlink -f "$t" 2>/dev/null) != $(readlink -f "$s" 2>/dev/null) ]]; then
+                    echo "removing conflicting symlink: $t"
+                    rm -f "$t"
+                fi
             elif [[ -f "$t" ]]; then
                 echo "removing conflicting file: $t"
                 rm -f "$t"
             fi
         done
-    }
+    fi
     stow -d "$R" -t "$tgt" --"$mode" -v "$pkg" "$@"
 }
 
@@ -75,7 +85,7 @@ update_stow() {
     find "$R/dots" -mindepth 1 -type d -exec bash -c 'd="$1/${2#$3/}"; [[ -d "$d" ]] || echo "creating dir: $d"; mkdir -p "$d"' _ "$T/.config" {} "$R/dots" \;
 
     _stow_pkg dots "$R/dots" "$T/.config" "$M" "$LOG"
-    _stow_pkg . "$R" "$T" "$M" "$LOG" --ignore='^(?!\.zshrc$|\.gtkrc-2\.0$).*'
+    _stow_pkg . "$R" "$T" "$M" "$LOG" .zshrc .gtkrc-2.0 -- --ignore='^(?!\.zshrc$|\.gtkrc-2\.0$).*'
 }
 
 update_sudo() {
