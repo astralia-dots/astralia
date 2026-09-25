@@ -11,8 +11,8 @@ local Anim = require("utils.animations")
 local col = {
 	lavender = "#5E50A0",
 	textDim = "#5E50A0",
-	accentAlt = "#C8942A",
-	accent = "#7B2FE8",
+	accentAlt = "#DBAA24",
+	accent = "#9B57F4",
 }
 
 -- =========

@@ -29,7 +29,7 @@ gaps inner 20
 gaps outer 0
 
 # class                 border   background text    indicator child_border
-client.focused          #7B2FE8  #7B2FE8    #FFFFFF #7B2FE8   #7B2FE8
+client.focused          #9B57F4  #9B57F4    #FFFFFF #9B57F4   #9B57F4
 client.focused_inactive #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
 client.unfocused        #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
 
