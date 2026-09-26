@@ -1,5 +1,5 @@
 # SWAY CONFIG
-# Translated from astralia/dots/hypr (decorations + keybinds only).
+# Translated from astralia/dots/wayland/hypr (decorations + keybinds only).
 # Scrollumns layout binds, per-monitor workspace grouping, and decoration
 # options with no Sway equivalent (rounding, blur, gradients, opacity
 # state, xwayland scaling) were intentionally dropped.

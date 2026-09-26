@@ -45,7 +45,7 @@ _stow_pkg() {
     local files=()
     while [[ $# -gt 0 && "$1" != "--" ]]; do files+=("$src/$1"); shift; done
     [[ "${1:-}" == "--" ]] && shift
-    if ! stow -d "$R" -t "$tgt" --"$mode" -n -v "$pkg" "$@" >"$log" 2>&1; then
+    if ! stow -d "${src%/*}" -t "$tgt" --"$mode" -n -v "$pkg" "$@" >"$log" 2>&1; then
         grep -q "conflict\|existing target" "$log" || die "stow dry-run failed ($pkg):"$'\n'"$(cat "$log")"
         local s t
         [[ ${#files[@]} -gt 0 ]] || mapfile -d '' files < <(find "$src" -mindepth 1 -name '.git' -prune -o -type f -print0)
@@ -62,7 +62,7 @@ _stow_pkg() {
             fi
         done
     fi
-    stow -d "$R" -t "$tgt" --"$mode" -v "$pkg" "$@"
+    stow -d "${src%/*}" -t "$tgt" --"$mode" -v "$pkg" "$@"
 }
 
 update_stow() {
@@ -74,12 +74,14 @@ update_stow() {
     while IFS= read -r -d '' t; do
         local resolved; resolved=$(realpath -m "$(dirname "$t")/$(readlink "$t")")
         [[ "$resolved" == "$R"/* ]] && { echo "removing dead symlink: $t"; rm -f "$t"; }
-    done < <(find "$T/.config" "$T/.zshrc" "$T/.gtkrc-2.0" -xtype l -print0 2>/dev/null)
+    done < <(find "$T/.config" "$T/.zshrc" "$T/.gtkrc-2.0" "$T/.Xresources" -xtype l -print0 2>/dev/null)
     find "$T/.config" -depth -type d -empty -delete 2>/dev/null || true
 
-    find "$R/dots" -mindepth 1 -type d -exec bash -c 'd="$1/${2#$3/}"; [[ -d "$d" ]] || echo "creating dir: $d"; mkdir -p "$d"' _ "$T/.config" {} "$R/dots" \;
-
-    _stow_pkg dots "$R/dots" "$T/.config" "$M" "$LOG"
+    local p
+    for p in common wayland x11; do
+        find "$R/dots/$p" -mindepth 1 -type d -exec bash -c 'd="$1/${2#$3/}"; [[ -d "$d" ]] || echo "creating dir: $d"; mkdir -p "$d"' _ "$T/.config" {} "$R/dots/$p" \;
+        _stow_pkg "$p" "$R/dots/$p" "$T/.config" "$M" "$LOG"
+    done
     _stow_pkg home "$R/home" "$T" "$M" "$LOG"
 }
 
@@ -157,7 +159,7 @@ update_gtk() {
     { [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] || [[ -S "${XDG_RUNTIME_DIR:-/run/user/$UID}/bus" ]]; } \
         || { echo "no session bus, skipping gtk sync"; return 0; }
 
-    local ini="$R/dots/gtk-3.0/settings.ini"
+    local ini="$R/dots/common/gtk-3.0/settings.ini"
     [[ -f "$ini" ]] || die "missing $ini"
 
     local theme icon font cursor csize dark

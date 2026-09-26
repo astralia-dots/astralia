@@ -51,6 +51,8 @@ DESKTOP_PKGS=(
     imagemagick
     libnotify
     mpv
+    xorg-xrdb
+    xterm
 )
 
 CLI_PKGS=(
