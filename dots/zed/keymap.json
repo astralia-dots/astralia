@@ -7,7 +7,15 @@
       // focus project panel, then run its binding below
       "ctrl-n": ["workspace::SendKeystrokes", "ctrl-shift-e ctrl-n"],
       "ctrl-shift-n": ["workspace::SendKeystrokes", "ctrl-shift-e ctrl-shift-n"],
-      "alt-left": ["workspace::SendKeystrokes", "ctrl-shift-e alt-left"]
+      "alt-left": ["workspace::SendKeystrokes", "ctrl-shift-e alt-left"],
+      // close the editor tab even when a panel has focus
+      "ctrl-w": ["action::Sequence", ["workspace::FocusCenterPane", ["workspace::SendKeystrokes", "ctrl-w"]]]
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-w": ["action::Sequence", ["workspace::FocusCenterPane", ["workspace::SendKeystrokes", "ctrl-w"]]]
     }
   },
   {
