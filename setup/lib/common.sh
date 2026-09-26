@@ -29,7 +29,7 @@ else
 fi
 
 # 2. Dependencies
-for group in CORE WAYLAND COMPOSITOR AUDIO CONNECTIVITY INPUT FONT DESKTOP CLI DEV AUR; do
+for group in CORE SESSION COMPOSITOR AUDIO CONNECTIVITY INPUT FONT DESKTOP CLI DEV AUR; do
     step "Installing $group packages"
     ref="${group}_PKGS[@]"
     paru -S --needed --noconfirm "${!ref}"

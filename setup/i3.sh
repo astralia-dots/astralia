@@ -2,11 +2,11 @@
 S="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 COMPOSITOR_PKGS=(
-    grim
-    slurp
-    sway
-    wl-clipboard
-    xdg-desktop-portal-wlr
+    i3-wm
+    picom
+    xclip
+    xorg-server
+    xorg-xinit
 )
 
 configure_greeter() {

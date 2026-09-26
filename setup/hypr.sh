@@ -2,8 +2,11 @@
 S="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 COMPOSITOR_PKGS=(
+    grim
     hyprland
     hyprshot
+    slurp
+    wl-clipboard
     xdg-desktop-portal-hyprland
 )
 

@@ -7,12 +7,9 @@ CORE_PKGS=(
     zsh
 )
 
-WAYLAND_PKGS=(
-    grim
+SESSION_PKGS=(
     plymouth
     qt6-multimedia
-    slurp
-    wl-clipboard
     xdg-desktop-portal
     xdg-utils
 )
