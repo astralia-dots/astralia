@@ -2,7 +2,7 @@
 export ASTRALIA_ROOT="$HOME/astralia"
 export -U PATH="$HOME/.local/bin:$PATH"
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
-CONDA_SRC="/opt/miniconda3/etc/profile.d/conda.sh"
+CONDA_SRC="$HOME/miniconda3/etc/profile.d/conda.sh"
 
 # 2. SHELL OPTIONS & HISTORY
 export HISTFILE=~/.zsh_history
@@ -28,7 +28,7 @@ precmd() {
   [[ $s -eq 0 && -n "$_hist_cmd" ]] && print -s -- "$_hist_cmd"
   _hist_cmd=""
 }
-fetch() { command -v fastfetch &>/dev/null && fastfetch --logo-type "$([[ $TERM == *kitty* ]] && echo kitty || echo sixel)"; }
+fetch() { command -v fastfetch &>/dev/null && fastfetch; }
 message() {
   printf '\e[38;2;155;87;244m'
   cat <<'EOF' | sed 's/^/      /'
