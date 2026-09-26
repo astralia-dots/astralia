@@ -188,7 +188,7 @@ for _, rule in ipairs({
 	{ match = { fullscreen = true }, border_color = V.col.accentAlt },
 	{ match = { float = true }, border_color = "#FFFFFF #FFFFFFAA" },
 	{ match = { tag = "monocle" }, border_color = V.col.accentAlt .. "EE " .. V.col.accentAlt .. "AA" },
-	{ match = { class = "code-oss" }, opacity = "0.7" },
+	{ match = { class = "(?i).*cod(e|ium).*" }, opacity = "0.7" },
 }) do
 	hl.window_rule(rule)
 end
