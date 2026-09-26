@@ -39,7 +39,8 @@ exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XDG_CU
 # ===========
 # WINDOW STATE
 # ===========
-bindsym $mod+Shift+r reload
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
 bindsym $mod+f fullscreen toggle
 bindsym $mod+v floating toggle
 
