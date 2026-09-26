@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
 # kitty needs OpenGL 3.3; foot renders in software, so it covers VMs and old GPUs
-gl=$(eglinfo -B 2>/dev/null | grep -m1 -oP 'OpenGL core profile version: \K[0-9]+\.[0-9]+')
-IFS=. read -r maj min <<<"${gl:-0.0}"
+# Detected once per machine (eglinfo costs ~130ms); delete the file to re-detect
+conf=${XDG_CONFIG_HOME:-$HOME/.config}/terminal
 
-command -v kitty &>/dev/null && ((maj * 10 + min >= 33)) && term=kitty || term=foot
-exec "$term" "$@"
+if [[ ! -s $conf ]]; then
+    gl=$(eglinfo -B 2>/dev/null | grep -m1 -oP 'OpenGL core profile version: \K[0-9]+\.[0-9]+')
+    IFS=. read -r maj min <<<"${gl:-0.0}"
+    command -v kitty &>/dev/null && ((maj * 10 + min >= 33)) && term=kitty || term=foot
+    [[ -n $gl ]] && echo "$term" >"$conf" # no eglinfo = unknown, don't cache
+fi
+
+exec "${term:-$(<"$conf")}" "$@"
