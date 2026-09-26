@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-exec kitty "$@"
+# kitty needs OpenGL 3.3; foot renders in software, so it covers VMs and old GPUs
+gl=$(eglinfo -B 2>/dev/null | grep -m1 -oP 'OpenGL core profile version: \K[0-9]+\.[0-9]+')
+IFS=. read -r maj min <<<"${gl:-0.0}"
+
+command -v kitty &>/dev/null && ((maj * 10 + min >= 33)) && term=kitty || term=foot
+exec "$term" "$@"

@@ -39,7 +39,6 @@ for_window [class="code-oss"] opacity 0.7
 # ===========
 # AUTOSTART
 # ===========
-exec $term --server
 exec $shell
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 

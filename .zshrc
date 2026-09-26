@@ -28,7 +28,7 @@ precmd() {
   [[ $s -eq 0 && -n "$_hist_cmd" ]] && print -s -- "$_hist_cmd"
   _hist_cmd=""
 }
-fetch() { command -v fastfetch &>/dev/null && fastfetch; }
+fetch() { command -v fastfetch &>/dev/null && fastfetch --logo-type "$([[ $TERM == *kitty* ]] && echo kitty || echo sixel)"; }
 message() {
   printf '\e[38;2;155;87;244m'
   cat <<'EOF' | sed 's/^/      /'
@@ -90,3 +90,4 @@ greet
 _cached_init starship init zsh --print-full-init
 _cached_init zoxide init zsh --cmd cd
 unfunction _cached_init
+

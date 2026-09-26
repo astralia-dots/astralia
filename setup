@@ -73,6 +73,7 @@ DESKTOP_PKGS=(
     hyprshot
     imagemagick
     libnotify
+    mesa-utils
     mpv
 )
 

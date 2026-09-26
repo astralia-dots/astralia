@@ -46,7 +46,7 @@
     {
       "type": "kernel",
       "key": "│ kernel",
-      "format": "{$2}{release>20}{$4} │"
+      "format": "{$1}{release>20}{$4} │"
     },
     {
       "type": "command",
@@ -57,12 +57,17 @@
     {
       "type": "packages",
       "key": "│ pkg",
-      "format": "{$3}{all>20}{$4} │"
+      "format": "{$2}{all>20}{$4} │"
     },
     {
       "type": "wm",
       "key": "│ wm",
       "format": "{$3}{>20}{$4} │"
+    },
+    {
+      "type": "terminal",
+      "key": "│ term",
+      "format": "{$3}{pretty-name>20}{$4} │"
     },
     {
       "type": "custom",
