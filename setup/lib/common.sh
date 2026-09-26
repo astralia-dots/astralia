@@ -1,110 +1,20 @@
-#!/usr/bin/env bash
 set -euo pipefail
 
 [[ "$EUID" -ne 0 ]] || { echo "Run as your regular user, not root."; exit 1; }
 
-R="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+R="$(cd "$S/.." && pwd)"
 
 die() { echo "error: $*" >&2; exit 1; }
 
 [[ "$(dirname "$R")" == "$HOME" ]] || die "Project must be cloned directly into \$HOME (found: $R)"
 step() { echo; echo "==> $*"; }
 
-source "$R/source/gpu.sh"
+source "$R/setup/lib/gpu.sh"
+source "$S/lib/packages.sh"
 
 sudo -v
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/99-keqing-setup >/dev/null
 trap 'sudo rm -f /etc/sudoers.d/99-keqing-setup' EXIT
-
-CORE_PKGS=(
-    git
-    grub
-    pciutils
-    stow
-    upower
-    zsh
-)
-
-COMPOSITOR_PKGS=(
-    grim
-    hyprland
-    plymouth
-    qt6-multimedia
-    slurp
-    sway
-    wl-clipboard
-    xdg-desktop-portal
-    xdg-desktop-portal-hyprland
-    xdg-desktop-portal-wlr
-    xdg-utils
-)
-
-AUDIO_PKGS=(
-    pipewire
-    pipewire-alsa
-    pipewire-audio
-    pipewire-pulse
-    wireplumber
-)
-
-CONNECTIVITY_PKGS=(
-    bluez
-    bluez-utils
-    networkmanager
-    syncthing
-)
-
-INPUT_PKGS=(
-    fcitx5
-    fcitx5-mozc
-    fcitx5-unikey
-)
-
-FONT_PKGS=(
-    fontconfig
-    noto-fonts-cjk
-    noto-fonts-emoji
-    otf-comicshanns-nerd
-)
-
-DESKTOP_PKGS=(
-    desktop-file-utils
-    foot
-    hyprshot
-    imagemagick
-    libnotify
-    mpv
-)
-
-CLI_PKGS=(
-    bat
-    brightnessctl
-    btop
-    chafa
-    fastfetch
-    fd
-    fzf
-    jq
-    ripgrep
-    starship
-    unzip
-    xxhash
-    yazi
-    yt-dlp
-    zoxide
-    zsh-autosuggestions
-)
-
-DEV_PKGS=(
-    cmake
-    code
-    nodejs
-    npm
-)
-
-AUR_PKGS=(
-    zen-browser-bin
-)
 
 # 1. paru
 step "Installing paru"
@@ -119,7 +29,7 @@ else
 fi
 
 # 2. Dependencies
-for group in CORE COMPOSITOR AUDIO CONNECTIVITY INPUT FONT DESKTOP CLI DEV AUR; do
+for group in CORE WAYLAND COMPOSITOR AUDIO CONNECTIVITY INPUT FONT DESKTOP CLI DEV AUR; do
     step "Installing $group packages"
     ref="${group}_PKGS[@]"
     paru -S --needed --noconfirm "${!ref}"
@@ -157,7 +67,11 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 # 6. update (skip: sddm, grub)
 step "Running update modules"
-"$R/scripts/update" all
+sudo ln -sf "$R/update" /usr/local/bin/update
+"$R/update" all
+
+step "Installing VS Code extensions"
+xargs -L1 code --install-extension < "$S/extensions.txt"
 
 # 7. Git
 step "Configuring git"
@@ -165,19 +79,7 @@ git config --global pull.rebase true
 git config --global push.autoSetupRemote true
 
 # 8. Greeter
-step "Machine type"
-read -r -p "Is this a PC? [y/N] " is_pc
-
-if [[ "$is_pc" =~ ^[Yy]$ ]]; then
-    step "Configuring autologin"
-    sudo pacman -S --needed --noconfirm greetd
-    sudo "$R/system/autologin" start-hyprland
-else
-    step "Configuring SDDM"
-    sudo pacman -S --needed --noconfirm sddm
-    sudo systemctl enable sddm
-    "$R/scripts/update" sddm
-fi
+configure_greeter
 
 cd "$HOME"
 echo

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-R="${ASTRALIA_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+R="${ASTRALIA_ROOT:-$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)}"
 TR="${UPDATE_TARGET_ROOT:-/}"
 TN="Keqing"
 SD="$R/scripts"
@@ -11,7 +11,7 @@ MODS=(all apps bin cmdline cursor font gtk grub plymouth sddm sudo symlinks vsco
 
 BIN_IGNORE=()
 
-source "$R/source/gpu.sh"
+source "$R/setup/lib/gpu.sh"
 
 fail() { echo "fail: ${BASH_SOURCE[1]:-${BASH_SOURCE[0]}}:${BASH_LINENO[0]:-?}: ${BASH_COMMAND}" >&2; exit "$?"; }
 die() { echo "$*" >&2; exit 1; }
@@ -40,11 +40,6 @@ _link() {
     fi
 }
 
-# Stows one package with its own source root, target and ignore pattern,
-# falling back to removing conflicting (stale/foreign) targets on dry-run
-# conflict before restowing for real.
-# Usage: _stow_pkg pkg src tgt mode log [files...] -- [stow args...]
-# Only the listed files (relative to src) are cleaned; none listed = all of src.
 _stow_pkg() {
     local pkg="$1" src="$2" tgt="$3" mode="$4" log="$5"; shift 5
     local files=()
@@ -85,7 +80,7 @@ update_stow() {
     find "$R/dots" -mindepth 1 -type d -exec bash -c 'd="$1/${2#$3/}"; [[ -d "$d" ]] || echo "creating dir: $d"; mkdir -p "$d"' _ "$T/.config" {} "$R/dots" \;
 
     _stow_pkg dots "$R/dots" "$T/.config" "$M" "$LOG"
-    _stow_pkg . "$R" "$T" "$M" "$LOG" .zshrc .gtkrc-2.0 -- --ignore='^(?!\.zshrc$|\.gtkrc-2\.0$).*'
+    _stow_pkg home "$R/home" "$T" "$M" "$LOG"
 }
 
 update_sudo() {
@@ -186,7 +181,7 @@ update_bin() {
     
     req_dir "$SD"; local files=()
     for f in "$SD"/*; do
-        [[ -f "$f" && ! "$f" -ef "${BASH_SOURCE[0]}" ]] || continue
+        [[ -f "$f" ]] || continue
         [[ " ${BIN_IGNORE[*]} " == *" ${f##*/} "* ]] || files+=("$f")
     done
     [[ ${#files[@]} -gt 0 ]] || die "No files in $SD"

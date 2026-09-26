@@ -80,8 +80,8 @@
     "terminal.integrated.stickyScroll.enabled": false,
     "update.showReleaseNotes": false,
     "vscode_custom_css.imports": [
-        "file:///home/keqingsimp/.config/code/ui.css",
-        "file:///home/keqingsimp/.config/code/script.js",
+        "file:///home/keqingsimp/.config/Code/ui.css",
+        "file:///home/keqingsimp/.config/Code/script.js",
         "file:///home/keqingsimp/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.9/dist/updateHandler.js"
     ],
     "window.commandCenter": false,
