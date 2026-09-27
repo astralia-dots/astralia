@@ -112,29 +112,58 @@ local function clear_state()
 	Command("rm"):arg({ "-f", path }):status()
 end
 
-local function wl_copy(paths)
+local function is_wayland()
+	local wd = os.getenv("WAYLAND_DISPLAY")
+	return wd ~= nil and wd ~= ""
+end
+
+local function copy_tool()
+	return is_wayland() and "wl-copy" or "xclip"
+end
+
+local function clip_copy(paths)
 	local lines = {}
 	for _, p in ipairs(paths) do
 		lines[#lines + 1] = path_to_uri(p)
 	end
-	local status, err = Command("wl-copy")
-		:arg({ "--type", "text/uri-list", "--", table.concat(lines, "\r\n") })
-		:status()
+	local data = table.concat(lines, "\r\n")
+
+	local cmd
+	if is_wayland() then
+		cmd = Command("wl-copy"):arg({ "--type", "text/uri-list", "--", data })
+	else
+		-- xclip reads the selection from stdin and forks to serve it; feed it via sh
+		-- and detach its stdout so nothing waits on the backgrounded owner.
+		cmd = Command("sh"):arg({
+			"-c",
+			'printf "%s" "$1" | xclip -selection clipboard -t text/uri-list -i >/dev/null',
+			"sh",
+			data,
+		})
+	end
+
+	local status, err = cmd:status()
 	if not status then
 		return false, err
 	end
 	return status.success, nil
 end
 
-local function wl_paste()
+local function clip_paste()
 	for _, t in ipairs({ "text/uri-list", "text/plain" }) do
-		local output = Command("wl-paste"):arg({ "--no-newline", "--type", t }):output()
+		local cmd
+		if is_wayland() then
+			cmd = Command("wl-paste"):arg({ "--no-newline", "--type", t })
+		else
+			cmd = Command("xclip"):arg({ "-selection", "clipboard", "-o", "-t", t })
+		end
+		local output = cmd:output()
 		if output and output.status.success then
 			return output.stdout or "", nil
 		end
 	end
-	-- ponytail: on failure we can't tell "clipboard empty" from "wl-paste missing";
-	-- treat both as empty. The copy path already surfaces a missing binary.
+	-- ponytail: on failure we can't tell "clipboard empty" from "wl-paste/xclip
+	-- missing"; treat both as empty. The copy path already surfaces a missing binary.
 	return "", nil
 end
 
@@ -158,9 +187,9 @@ local function copy_or_cut(action)
 	end
 
 	write_mode(action == "cut" and "cut" or "copy")
-	local ok, err = wl_copy(norm)
+	local ok, err = clip_copy(norm)
 	if not ok then
-		notify("error", "wl-copy failed: " .. tostring(err), 3)
+		notify("error", copy_tool() .. " failed: " .. tostring(err), 3)
 		return
 	end
 
@@ -175,10 +204,10 @@ local function paste()
 		return
 	end
 
-	local content, perr = wl_paste()
+	local content, perr = clip_paste()
 	content = content and content:gsub("\n+$", "") or ""
 	if perr then
-		notify("error", "wl-paste failed: " .. tostring(perr), 3)
+		notify("error", "clipboard read failed: " .. tostring(perr), 3)
 		return
 	end
 	if content == "" then
@@ -253,7 +282,7 @@ local function paste()
 			end
 		end
 		if #new_paths > 0 then
-			wl_copy(new_paths)
+			clip_copy(new_paths)
 			write_mode("cut")
 		else
 			clear_state()
