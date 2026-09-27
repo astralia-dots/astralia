@@ -13,6 +13,7 @@ set $browser browser
 set $editor editor
 set $filemanager file-manager
 set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && maim -s $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
+set $shell astralia-shell
 
 # ===========
 # APPEARANCE
@@ -34,6 +35,7 @@ client.unfocused        #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
 # AUTOSTART
 # ===========
 exec --no-startup-id picom
+exec --no-startup-id astralia-shell
 exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XDG_CURRENT_DESKTOP=i3
 
 # ===========
@@ -43,6 +45,12 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+f fullscreen toggle
 bindsym $mod+v floating toggle
+
+# ===========
+# ASTRALIA
+# ===========
+bindsym Shift+space exec $shell launcher
+bindsym $mod+q exec $shell logout
 
 # ===========
 # APPS
