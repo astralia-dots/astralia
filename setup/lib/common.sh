@@ -68,6 +68,8 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 # 6. update (skip: sddm, grub)
 step "Running update modules"
 sudo ln -sf "$R/update" /usr/local/bin/update
+mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/astralia"
+echo "$STOW_SESSION" > "${XDG_STATE_HOME:-$HOME/.local/state}/astralia/session"
 "$R/update" all
 
 step "Installing VS Code extensions"

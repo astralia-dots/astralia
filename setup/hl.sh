@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 S="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+STOW_SESSION=hl
+
 COMPOSITOR_PKGS=(
     grim
     hyprland

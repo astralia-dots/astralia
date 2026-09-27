@@ -1,13 +1,8 @@
-# SWAY CONFIG
-# Translated from astralia/dots/wayland/hypr (decorations + keybinds only).
-# Scrollumns layout binds, per-monitor workspace grouping, and decoration
-# options with no Sway equivalent (rounding, blur, gradients, opacity
-# state, xwayland scaling) were intentionally dropped.
-
-# ===========
-# DISPLAY
-# ===========
-output "*" scale 1
+# I3 CONFIG
+# Translated from astralia/dots/hl/hypr. Per-window opacity, blur and rounding
+# are handled by picom (dots/i3/picom/picom.conf). Wayland-only options
+# (output scale, --locked binds, seat/input blocks) and the astralia
+# desktop-shell (wlr-layer-shell only) were dropped.
 
 # ===========
 # VARIABLES
@@ -17,14 +12,17 @@ set $term terminal
 set $browser browser
 set $editor editor
 set $filemanager file-manager
-set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && grim -g "$(slurp)" $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
-set $shell desktop-shell
+set $screenshot bash -c 'mkdir -p $HOME/Pictures/screenshots/ && maim -s $HOME/Pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
+set $shell astralia-shell
 
 # ===========
 # APPEARANCE
 # ===========
+font pango:monospace 10
 default_border pixel 5
 default_floating_border pixel 5
+# override _MOTIF_WM_HINTS (VS Code, Chromium) that request no border
+for_window [all] border pixel 5
 gaps inner 20
 gaps outer 0
 
@@ -33,37 +31,26 @@ client.focused          #9B57F4  #9B57F4    #FFFFFF #9B57F4   #9B57F4
 client.focused_inactive #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
 client.unfocused        #5E50A0  #5E50A0    #FFFFFF #5E50A0   #5E50A0
 
-for_window [app_id="code-oss"] opacity 0.7
-for_window [class="code-oss"] opacity 0.7
-
 # ===========
 # AUTOSTART
 # ===========
-exec $shell
-exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-
-# ===========
-# SHELL
-# ===========
-bindsym $mod+d exec $shell dock
-bindsym $mod+i exec $shell settings
-bindsym $mod+l exec $shell lock
-bindsym $mod+m exec $shell rain
-bindsym $mod+q exec $shell logout
-bindsym $mod+Tab exec $shell overview
-bindsym $mod+Shift+a exec $shell bar-all
-bindsym $mod+Shift+c exec $shell dashboard
-bindsym $mod+Shift+d exec $shell dock-all
-bindsym $mod+Shift+v exec $shell visualizer
-bindsym Shift+space exec $shell launcher
+exec --no-startup-id picom
+exec --no-startup-id astralia-shell
+exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XDG_CURRENT_DESKTOP=i3
 
 # ===========
 # WINDOW STATE
 # ===========
-# Hyprland split monocle/maximize from true fullscreen; Sway has a single
-# fullscreen concept, so both collapse onto this one bind.
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r exec --no-startup-id "pkill -USR1 -x picom || picom -b", restart
 bindsym $mod+f fullscreen toggle
 bindsym $mod+v floating toggle
+
+# ===========
+# ASTRALIA
+# ===========
+bindsym Shift+space exec $shell launcher
+bindsym $mod+q exec $shell logout
 
 # ===========
 # APPS
@@ -72,7 +59,7 @@ bindsym $mod+b exec $browser
 bindsym $mod+c exec $editor
 bindsym $mod+e exec $filemanager
 bindsym $mod+Shift+k exec $editor $HOME/astralia
-bindsym $mod+Shift+s exec $screenshot
+bindsym $mod+Shift+s exec --no-startup-id $screenshot
 bindsym $mod+t exec $term
 
 # ===========
@@ -89,7 +76,7 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+w kill
 
 # ===========
-# WORKSPACES (flattened to global 1-10)
+# WORKSPACES
 # ===========
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
@@ -116,16 +103,14 @@ bindsym $mod+Shift+0 move container to workspace 10; workspace 10
 # ===========
 # MEDIA
 # ===========
-bindsym --locked XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-
-bindsym --locked XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-bindsym --locked XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 1%+
-bindsym --locked XF86MonBrightnessDown exec brightnessctl -e4 -n2 set 1%-
-bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 1%+
+bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-
+bindsym XF86AudioMicMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 1%+
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl -e4 -n2 set 1%-
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -e4 -n2 set 1%+
 
 # ===========
 # MOUSE
 # ===========
-seat * xcursor_theme Keqing 24
 floating_modifier $mod
-input type:touchpad natural_scroll enabled

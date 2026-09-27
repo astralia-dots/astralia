@@ -1,5 +1,5 @@
 ! XTERM
-! Mirrors dots/wayland/foot/foot.ini. Loaded by the SDDM Xsession script via xrdb.
+! Mirrors dots/hl/foot/foot.ini. Loaded by the SDDM Xsession script via xrdb.
 
 ! ===========
 ! FONT
