@@ -12,6 +12,7 @@ return {
     { "<C-p>", function() LazyVim.pick("files")() end, desc = "Find Files (Root Dir)" },
   },
   opts = {
+    image = { enabled = false }, -- only speaks the kitty graphics protocol; image.nvim (ueberzug) handles image files instead
     explorer = { replace_netrw = false }, -- don't auto-open the explorer for directories
     picker = {
       sources = {

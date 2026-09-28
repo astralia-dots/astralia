@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-[ "$XDG_SESSION_TYPE" = x11 ] && exec xterm ${1:+-e "$@"}
-exec foot "$@"
+exec kitty "$@"
