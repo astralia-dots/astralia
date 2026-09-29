@@ -60,9 +60,15 @@ systemctl --user mask dunst.service 2>/dev/null || true
 sudo systemctl mask dunst.service 2>/dev/null || true
 
 # 5. GRUB install
-mountpoint -q /boot/efi && efi_dir=/boot/efi || efi_dir=/boot
 sudo mkdir -p /boot/grub
-sudo grub-install --target=x86_64-efi --efi-directory="$efi_dir" --bootloader-id=GRUB
+if [[ -d /sys/firmware/efi ]]; then
+    sudo pacman -S --needed --noconfirm efibootmgr
+    mountpoint -q /boot/efi && efi_dir=/boot/efi || efi_dir=/boot
+    sudo grub-install --target=x86_64-efi --efi-directory="$efi_dir" --bootloader-id=GRUB
+else # BIOS (GPT needs bios_grub partition)
+    src=$(findmnt -no SOURCE /); src=${src%%\[*}
+    sudo grub-install --target=i386-pc "/dev/$(lsblk -no PKNAME "$src" | head -1)"
+fi
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 # 6. update (skip: grub)
