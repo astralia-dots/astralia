@@ -7,14 +7,13 @@ show_hidden = true
 image_bound = [10000, 10000]
 
 [opener]
-edit = [{ run = 'code %s', block = true, for = "unix" }]
+edit = [{ run = 'editor %s', block = true, for = "unix" }]
 astah = [{ run = 'astah-uml %s', desc = "Open in Astah", orphan = true }]
 drawio = [{ run = 'drawio %s', desc = "Open in Draw.io", orphan = true }]
 
 [open]
 prepend_rules = [
   { url = "*.html", use = ["edit", "open", "reveal"] },
-  { url = "*.asta", use = "astah" },
   { url = "*.drawio", use = "drawio" },
 ]
 
