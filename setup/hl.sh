@@ -20,11 +20,6 @@ configure_greeter() {
         step "Configuring autologin"
         sudo pacman -S --needed --noconfirm greetd
         sudo "$S/lib/autologin.sh" start-hyprland
-    else
-        step "Configuring SDDM"
-        sudo pacman -S --needed --noconfirm sddm
-        sudo systemctl enable sddm
-        "$R/update" sddm
     fi
 }
 

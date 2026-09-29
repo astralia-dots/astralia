@@ -8,7 +8,7 @@ SD="$R/scripts"
 TD="$R/system/themes"
 SF="${XDG_STATE_HOME:-$HOME/.local/state}/astralia/session"
 
-MODS=(all apps bin cmdline cursor font gtk grub plymouth sddm sudo symlinks vscode yazi splash ramfs checkroot stow)
+MODS=(all apps bin cmdline cursor font gtk grub plymouth sudo symlinks vscode yazi splash ramfs checkroot stow)
 
 BIN_IGNORE=()
 
@@ -253,21 +253,6 @@ update_grub() {
     [[ "$1" == "/" ]] && sudo grub-mkconfig -o /boot/grub/grub.cfg || true
 }
 
-update_sddm() {
-    req_cmd sddm
-    local dst_t; dst_t=$(join_r "$1" "/usr/share/sddm/themes/$TN")
-    local dst_c; dst_c=$(join_r "$1" "/etc/sddm.conf")
-
-    if [[ "$2" -eq 1 ]]; then
-        sudoc "$1" rm -rf "$dst_t"
-    else
-        req_dir "$TD/sddm/$TN"
-        sudoc "$1" rm -rf "$dst_t"; sudoc "$1" mkdir -p "$dst_t"
-        sudoc "$1" cp -r --no-preserve=ownership "$TD/sddm/$TN"/. "$dst_t"/
-        sudoc "$1" install -Dm644 "$TD/sddm/sddm.conf" "$dst_c"
-    fi
-}
-
 update_cmdline() {
     _detect_gpu
     local extra=()
@@ -385,7 +370,7 @@ case "$mod" in
     stow) update_stow "$sess" "$rm" ;;
     sudo|font|cursor|gtk|ramfs|vscode) "update_$mod" "$TR" ;;
     symlinks) update_symlinks ;;
-    apps|bin|yazi|sddm) "update_$mod" "$TR" "$rm" ;;
+    apps|bin|yazi) "update_$mod" "$TR" "$rm" ;;
     plymouth) update_plymouth "$TR" "$rm" "$norebuild" ;;
     cmdline) update_cmdline "$TR" "$norebuild" ;;
     splash) update_splash "$TR" ;;

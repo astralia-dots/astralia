@@ -65,7 +65,7 @@ sudo mkdir -p /boot/grub
 sudo grub-install --target=x86_64-efi --efi-directory="$efi_dir" --bootloader-id=GRUB
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-# 6. update (skip: sddm, grub)
+# 6. update (skip: grub)
 step "Running update modules"
 sudo ln -sf "$R/update" /usr/local/bin/update
 mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/astralia"
@@ -81,7 +81,9 @@ git config --global pull.rebase true
 git config --global push.autoSetupRemote true
 
 # 8. Greeter
-configure_greeter
+if declare -f configure_greeter >/dev/null; then
+    configure_greeter
+fi
 
 cd "$HOME"
 echo

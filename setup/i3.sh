@@ -11,11 +11,4 @@ COMPOSITOR_PKGS=(
     xorg-xinit
 )
 
-configure_greeter() {
-    step "Configuring SDDM"
-    sudo pacman -S --needed --noconfirm sddm
-    sudo systemctl enable sddm
-    "$R/update" sddm
-}
-
 source "$S/lib/common.sh"
