@@ -2,6 +2,11 @@
 ! Mirrors dots/hl/foot/foot.ini. Loaded by i3 via xrdb (dots/i3/i3/config).
 
 ! ===========
+! SCALING
+! ===========
+Xft.dpi: 96
+
+! ===========
 ! FONT
 ! ===========
 XTerm*faceName: ComicShannsMono Nerd Font Mono
