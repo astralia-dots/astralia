@@ -7,10 +7,7 @@ SESSION_CMD="${1:-start-hyprland}"
 TARGET_USER="$SUDO_USER"
 TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
 
-# zsh
-if ! command -v zsh &>/dev/null; then
-    pacman -S --noconfirm zsh
-fi
+# zsh (installed by CORE_PKGS)
 ZSH_PATH=$(command -v zsh)
 grep -qF "$ZSH_PATH" /etc/shells || echo "$ZSH_PATH" >> /etc/shells
 [[ "$(getent passwd "$TARGET_USER" | cut -d: -f7)" == "$ZSH_PATH" ]] || chsh -s "$ZSH_PATH" "$TARGET_USER"
@@ -22,8 +19,7 @@ fi
 
 # disable other display managers / login services
 for dm in sddm lightdm gdm lxdm ly slim; do
-    systemctl disable "$dm.service" 2>/dev/null || true
-    systemctl stop    "$dm.service" 2>/dev/null || true
+    systemctl disable --now "$dm.service" 2>/dev/null || true
 done
 
 # remove agetty autologin override if present

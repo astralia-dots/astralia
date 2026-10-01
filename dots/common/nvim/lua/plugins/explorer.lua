@@ -1,7 +1,7 @@
 return {
   "folke/snacks.nvim",
   init = function()
-    -- `nvim <dir>`: cd into it (snacks already shows the dashboard for a lone directory arg)
+    -- `nvim <dir>`: cd into it
     local dir = vim.fn.argc() == 1 and vim.fn.argv(0) or nil
     if dir and vim.fn.isdirectory(dir) == 1 then
       vim.fn.chdir(dir)
@@ -9,21 +9,28 @@ return {
   end,
   keys = {
     { "<leader><space>", false },
+    { "<leader>e", false },
+    {
+      "<C-S-e>",
+      function() Snacks.explorer({ cwd = LazyVim.root() }) end,
+      mode = { "n", "i", "v", "t" },
+      desc = "Explorer Snacks (root dir)",
+    },
     { "<C-p>", function() LazyVim.pick("files")() end, desc = "Find Files (Root Dir)" },
   },
   opts = {
-    image = { enabled = true }, -- kitty graphics protocol
-    explorer = { replace_netrw = false }, -- don't auto-open the explorer for directories
+    image = { enabled = true },
+    explorer = { replace_netrw = false },
     picker = {
       sources = {
         explorer = {
-          hidden = true, -- show dotfiles (incl. .gitignore)
-          ignored = true, -- show git-ignored files
+          hidden = true,
+          ignored = true,
           win = {
             list = {
               keys = {
-                ["<M-Left>"] = "explorer_close_all", -- collapse all directories (VSCode muscle memory)
-                ["<BS>"] = false, -- don't climb out of the project root
+                ["<M-Left>"] = "explorer_close_all",
+                ["<BS>"] = false,
               },
             },
           },

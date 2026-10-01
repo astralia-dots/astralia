@@ -22,15 +22,15 @@ require("lazy").setup({
 	},
 	defaults = {
 		lazy = false,
-		version = false, -- latest git commit; many plugins' releases are outdated
+		version = false,
 	},
 	install = { colorscheme = { "tokyonight", "habamax" } },
-	checker = { enabled = true, notify = false }, -- check for plugin updates silently
+	checker = { enabled = true, notify = false },
 	performance = {
 		rtp = {
 			disabled_plugins = {
 				"gzip",
-				"netrwPlugin", -- no directory listing on `nvim <dir>` (see plugins/explorer.lua)
+				"netrwPlugin",
 				"tarPlugin",
 				"tohtml",
 				"tutor",

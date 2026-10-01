@@ -114,3 +114,8 @@ bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -e4 -n2 set 1%+
 # MOUSE
 # ===========
 floating_modifier $mod
+
+# ===========
+# LOCAL OVERRIDES
+# ===========
+include ~/.config/i3/local

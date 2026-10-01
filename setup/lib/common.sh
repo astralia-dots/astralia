@@ -16,7 +16,6 @@ sudo -v
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/99-keqing-setup >/dev/null
 trap 'sudo rm -f /etc/sudoers.d/99-keqing-setup' EXIT
 
-# 1. paru
 step "Installing paru"
 if ! command -v paru &>/dev/null; then
     sudo pacman -S --needed --noconfirm base-devel git
@@ -28,38 +27,31 @@ else
     echo "paru already installed"
 fi
 
-# 2. Dependencies
+step "Installing packages + GPU drivers"
+pkgs=()
 for group in CORE SESSION COMPOSITOR AUDIO CONNECTIVITY INPUT FONT DESKTOP CLI DEV AUR; do
-    step "Installing $group packages"
-    ref="${group}_PKGS[@]"
-    paru -S --needed --noconfirm "${!ref}"
+    ref="${group}_PKGS[@]"; pkgs+=("${!ref}")
 done
 
-# 3. GPU drivers
-step "Installing GPU drivers"
-[[ "$(uname -r)" =~ -arch[0-9] ]] && dkms_suffix="" || dkms_suffix="-dkms"
+[[ "$(uname -r)" =~ -arch[0-9] ]] && dkms="" || dkms="-dkms"
 _detect_gpu
-
 if $has_nvidia; then
-    chip=$(echo "$_gpu_gpus" | grep -i nvidia | grep -oP '\b(TU|GA|AD|GB)\d+' | head -1)
-    [[ -n "$chip" ]] \
-        && paru -S --needed --noconfirm "nvidia-open${dkms_suffix}" nvidia-utils egl-wayland \
-        || paru -S --needed --noconfirm "nvidia${dkms_suffix}" nvidia-utils egl-wayland
+    grep -i nvidia <<<"$gpus" | grep -qP '\b(TU|GA|AD|GB)\d+' && pkgs+=("nvidia-open$dkms") || pkgs+=("nvidia$dkms")
+    pkgs+=(nvidia-utils egl-wayland)
 fi
-$has_amd   && paru -S --needed --noconfirm mesa vulkan-radeon libva-mesa-driver
-$has_intel && paru -S --needed --noconfirm mesa vulkan-intel intel-media-driver
-! $has_nvidia && ! $has_amd && ! $has_intel && echo "GPU not detected, skipping driver installation"
+{ $has_amd || $has_intel; } && pkgs+=(mesa)
+$has_amd   && pkgs+=(vulkan-radeon libva-mesa-driver)
+$has_intel && pkgs+=(vulkan-intel intel-media-driver)
+$has_nvidia || $has_amd || $has_intel || echo "GPU not detected, skipping driver installation"
 
-# 4. Enable services
+paru -S --needed --noconfirm "${pkgs[@]}"
+
 step "Enabling services"
-sudo systemctl enable NetworkManager bluetooth # network, bluetooth
-systemctl --user enable pipewire pipewire-pulse wireplumber syncthing # audio, sync
-
-step "Masking dunst"
+sudo systemctl enable NetworkManager bluetooth
+systemctl --user enable pipewire pipewire-pulse wireplumber syncthing
 systemctl --user mask dunst.service 2>/dev/null || true
-sudo systemctl mask dunst.service 2>/dev/null || true
 
-# 5. GRUB install
+step "Installing GRUB"
 sudo mkdir -p /boot/grub
 if [[ -d /sys/firmware/efi ]]; then
     sudo pacman -S --needed --noconfirm efibootmgr
@@ -71,25 +63,20 @@ else # BIOS (GPT needs bios_grub partition)
 fi
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-# 6. update (skip: grub)
-step "Running update modules"
+step "Running update modules" # grub theme not included: needs a resolution
 sudo ln -sf "$R/update" /usr/local/bin/update
 mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/astralia"
 echo "$STOW_SESSION" > "${XDG_STATE_HOME:-$HOME/.local/state}/astralia/session"
 "$R/update" all
 
 step "Installing VS Code extensions"
-xargs -L1 code --install-extension < "$S/extensions.txt"
+sed 's/^/--install-extension\n/' "$S/extensions.txt" | xargs -d '\n' code
 
-# 7. Git
 step "Configuring git"
 git config --global pull.rebase true
 git config --global push.autoSetupRemote true
 
-# 8. Greeter
-if declare -f configure_greeter >/dev/null; then
-    configure_greeter
-fi
+if declare -f configure_greeter >/dev/null; then configure_greeter; fi
 
 cd "$HOME"
 echo

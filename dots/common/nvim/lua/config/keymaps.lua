@@ -1,6 +1,4 @@
--- Close all file buffers into the dashboard, leaving Claude/explorer panes alone. Dashboard
--- first: bufdelete refills emptied windows with the Claude terminal, and a windowless
--- Snacks.dashboard() is a fullscreen float that hides everything opened after it
+-- Close file buffers to dashboard; dashboard first or bufdelete fills the window with Claude
 vim.keymap.set("n", "<leader>ba", function()
   local function is_file(b)
     return vim.bo[b].buftype == ""
@@ -18,8 +16,7 @@ vim.keymap.set("n", "<leader>ba", function()
   Snacks.bufdelete.delete({ filter = is_file })
 end, { desc = "Close All Buffers (Dashboard)" })
 
--- Ctrl+Left/Right move the split border in the arrow's direction, so a right-edge
--- panel (Claude) grows with Left; also in terminal mode (Claude grabs focus in insert mode)
+-- Move split border in arrow direction
 local function nudge(dir)
   return function()
     local right_edge = vim.fn.winnr("l") == vim.fn.winnr()
@@ -29,6 +26,5 @@ end
 vim.keymap.set({ "n", "t" }, "<C-Left>", nudge("left"), { desc = "Move Split Border Left" })
 vim.keymap.set({ "n", "t" }, "<C-Right>", nudge("right"), { desc = "Move Split Border Right" })
 
--- Height resize from terminal mode too
 vim.keymap.set("t", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
 vim.keymap.set("t", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })

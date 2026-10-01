@@ -18,7 +18,6 @@ configure_greeter() {
 
     if [[ "$is_pc" =~ ^[Yy]$ ]]; then
         step "Configuring autologin"
-        sudo pacman -S --needed --noconfirm greetd
         sudo "$S/lib/autologin.sh" start-hyprland
     fi
 }

@@ -1,8 +1,6 @@
--- ~/.local/bin is only on PATH in interactive zsh, so nvim launched from a
--- keybind/launcher can't find `claude`; point at the binary directly
+-- Not on PATH outside interactive zsh
 local claude_bin = vim.fn.expand("~/.local/bin/claude")
 
--- Run a :ClaudeCode* command only if Claude Code is installed
 local function gated(cmd)
 	return function()
 		if vim.fn.executable(claude_bin) == 1 then
@@ -16,7 +14,7 @@ end
 return {
 	"coder/claudecode.nvim",
 	keys = {
-		{ "<leader>ac", gated("ClaudeCode"), desc = "Toggle Claude" },
+		{ "<C-M-b>", gated("ClaudeCode"), mode = { "n", "i", "t" }, desc = "Toggle Claude" },
 		{ "<leader>af", gated("ClaudeCodeFocus"), desc = "Focus Claude" },
 		{ "<leader>ar", gated("ClaudeCode --resume"), desc = "Resume Claude" },
 		{ "<leader>aC", gated("ClaudeCode --continue"), desc = "Continue Claude" },
@@ -25,15 +23,13 @@ return {
 		terminal_cmd = claude_bin,
 		terminal = {
 			split_width_percentage = 0.4,
-			auto_insert = false, -- open/focus the pane in normal mode; press i to type
-			-- LazyVim gives every Snacks terminal Ctrl+/ = hide, which hid Claude instead of
-			-- toggling the shell terminal; drop them so the global Ctrl+/ map applies here
+			auto_insert = false,
+			-- Let global Ctrl+/ toggle the shell instead of hiding Claude
 			snacks_win_opts = { keys = { hide_slash = false, hide_underscore = false } },
 		},
 	},
 	init = function()
-		-- Remember the panel width across toggles (the plugin re-creates the split
-		-- at split_width_percentage every time it's shown)
+		-- Remember panel width across toggles
 		local width
 		local function claude_buf()
 			local ok, term = pcall(require, "claudecode.terminal")
@@ -41,7 +37,6 @@ return {
 		end
 		local group = vim.api.nvim_create_augroup("claude_panel_width", { clear = true })
 
-		-- Save the width as the panel is hidden (WinClosed fires for hides too)
 		vim.api.nvim_create_autocmd("WinClosed", {
 			group = group,
 			callback = function(ev)
@@ -65,7 +60,7 @@ return {
 					end
 				end
 				apply()
-				vim.schedule(apply) -- again after the plugin finishes laying out the split
+				vim.schedule(apply) -- after plugin layout
 			end,
 		})
 	end,

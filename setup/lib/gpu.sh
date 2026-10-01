@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 _detect_gpu() {
-    local gpus; gpus=$(lspci | grep -i 'VGA\|3D\|Display')
+    [[ -n "${gpus+x}" ]] && return 0
+    gpus=$(lspci | grep -i 'VGA\|3D\|Display' || true)
     has_nvidia=false; has_amd=false; has_intel=false
-    echo "$gpus" | grep -qi nvidia        && has_nvidia=true
-    echo "$gpus" | grep -qi 'amd\|radeon' && has_amd=true
-    echo "$gpus" | grep -qi intel         && has_intel=true
-    _gpu_gpus="$gpus"
+    grep -qi nvidia        <<<"$gpus" && has_nvidia=true
+    grep -qi 'amd\|radeon' <<<"$gpus" && has_amd=true
+    grep -qi intel         <<<"$gpus" && has_intel=true
+    return 0
 }
