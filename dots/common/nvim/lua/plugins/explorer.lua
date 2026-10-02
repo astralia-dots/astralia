@@ -12,17 +12,38 @@ return {
     { "<leader>e", false },
     {
       "<C-S-e>",
-      function() Snacks.explorer({ cwd = LazyVim.root() }) end,
+      function()
+        -- Open -> focus if open but unfocused -> close if focused
+        local p = Snacks.picker.get({ source = "explorer" })[1]
+        if p and not p:is_focused() then
+          p:focus("list")
+        else
+          Snacks.explorer({ cwd = LazyVim.root() })
+        end
+      end,
       mode = { "n", "i", "v", "t" },
       desc = "Explorer Snacks (root dir)",
     },
-    { "<C-p>", function() LazyVim.pick("files")() end, desc = "Find Files (Root Dir)" },
+    {
+      "<C-p>",
+      function()
+        local p = Snacks.picker.get({ source = "files" })[1]
+        if p then
+          p:close()
+        else
+          LazyVim.pick("files")()
+        end
+      end,
+      mode = { "n", "i", "v", "t" },
+      desc = "Toggle Find Files (Root Dir)",
+    },
   },
   opts = {
     image = { enabled = true },
     explorer = { replace_netrw = false },
     picker = {
       sources = {
+        files = { win = { input = { keys = { ["<C-p>"] = { "close", mode = { "n", "i" } } } } } },
         explorer = {
           hidden = true,
           ignored = true,
@@ -40,6 +61,7 @@ return {
               keys = {
                 ["<M-Left>"] = "explorer_close_all",
                 ["<BS>"] = false,
+                ["<C-n>"] = "explorer_add",
               },
             },
           },
