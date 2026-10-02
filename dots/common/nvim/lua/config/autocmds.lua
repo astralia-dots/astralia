@@ -13,3 +13,19 @@ vim.api.nvim_create_autocmd({ "FocusLost", "WinLeave", "BufLeave" }, {
     end
   end,
 })
+
+-- Open PDFs in zathura instead of a buffer
+if vim.fn.executable("zathura") == 1 then
+  vim.api.nvim_create_autocmd("BufReadCmd", {
+    group = vim.api.nvim_create_augroup("pdf_zathura", { clear = true }),
+    pattern = "*.pdf",
+    callback = function(ev)
+      vim.fn.jobstart({ "zathura", ev.file }, { detach = true })
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(ev.buf) then
+          vim.api.nvim_buf_delete(ev.buf, { force = true })
+        end
+      end)
+    end,
+  })
+end
