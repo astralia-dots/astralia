@@ -29,38 +29,21 @@ return {
 		},
 	},
 	init = function()
-		-- Remember panel width across toggles
-		local width
-		local function claude_buf()
+		-- Keep panel at 40% of the terminal width on open and on resize
+		local function apply()
 			local ok, term = pcall(require, "claudecode.terminal")
-			return ok and term.get_active_terminal_bufnr() or nil
+			local buf = ok and term.get_active_terminal_bufnr()
+			for _, win in ipairs(buf and vim.fn.win_findbuf(buf) or {}) do
+				vim.api.nvim_win_set_width(win, math.floor(vim.o.columns * 0.4))
+			end
 		end
-		local group = vim.api.nvim_create_augroup("claude_panel_width", { clear = true })
-
-		vim.api.nvim_create_autocmd("WinClosed", {
-			group = group,
+		vim.api.nvim_create_autocmd({ "VimResized", "BufWinEnter" }, {
+			group = vim.api.nvim_create_augroup("claude_panel_width", { clear = true }),
 			callback = function(ev)
-				local win = tonumber(ev.match)
-				local buf = claude_buf()
-				if buf and win and vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf then
-					width = vim.api.nvim_win_get_width(win)
-				end
-			end,
-		})
-
-		vim.api.nvim_create_autocmd("BufWinEnter", {
-			group = group,
-			callback = function(ev)
-				if not width or ev.buf ~= claude_buf() then
-					return
-				end
-				local function apply()
-					for _, win in ipairs(vim.fn.win_findbuf(ev.buf)) do
-						vim.api.nvim_win_set_width(win, width)
-					end
-				end
 				apply()
-				vim.schedule(apply) -- after plugin layout
+				if ev.event == "BufWinEnter" then
+					vim.schedule(apply) -- after plugin layout
+				end
 			end,
 		})
 	end,
