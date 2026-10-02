@@ -21,9 +21,20 @@ if vim.fn.executable("zathura") == 1 then
     pattern = "*.pdf",
     callback = function(ev)
       vim.fn.jobstart({ "zathura", ev.file }, { detach = true })
+      local alt = vim.fn.bufnr("#")
       vim.schedule(function()
-        if vim.api.nvim_buf_is_valid(ev.buf) then
-          vim.api.nvim_buf_delete(ev.buf, { force = true })
+        if not vim.api.nvim_buf_is_valid(ev.buf) then return end
+        -- put windows back on the previous buffer so deleting doesn't close them or leave a blank one
+        local has_alt = alt > 0 and alt ~= ev.buf and vim.api.nvim_buf_is_valid(alt)
+        local back = has_alt and alt or vim.api.nvim_create_buf(true, false)
+        for _, win in ipairs(vim.fn.win_findbuf(ev.buf)) do
+          vim.api.nvim_win_set_buf(win, back)
+        end
+        vim.api.nvim_buf_delete(ev.buf, { force = true })
+        -- no previous buffer = it was the (wiped) dashboard; bring it back
+        if not has_alt then
+          vim.api.nvim_buf_delete(back, { force = true })
+          Snacks.dashboard.open()
         end
       end)
     end,

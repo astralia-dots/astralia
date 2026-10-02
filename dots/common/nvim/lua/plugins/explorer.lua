@@ -26,6 +26,15 @@ return {
         explorer = {
           hidden = true,
           ignored = true,
+          actions = {
+            confirm = function(picker, item, action)
+              if item and not item.dir and item.file:match("%.pdf$") and vim.fn.executable("zathura") == 1 then
+                vim.fn.jobstart({ "zathura", item.file }, { detach = true })
+                return
+              end
+              return require("snacks.explorer.actions").actions.confirm(picker, item, action)
+            end,
+          },
           win = {
             list = {
               keys = {
