@@ -53,6 +53,7 @@ DESKTOP_PKGS=(
 )
 
 CLI_PKGS=(
+    7zip
     bat
     brightnessctl
     btop
@@ -61,6 +62,7 @@ CLI_PKGS=(
     fd
     fzf
     jq
+    poppler
     ripgrep
     starship
     unzip

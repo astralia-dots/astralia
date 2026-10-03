@@ -7,6 +7,43 @@ return {
       vim.fn.chdir(dir)
     end
   end,
+  config = function(_, opts)
+    require("snacks").setup(opts)
+    -- Explorer sort: dirs, then extension, then name. Snacks hard-codes this in Tree:walk.
+    local Tree = getmetatable(require("snacks.explorer.tree"))
+    local function ext(n)
+      return n.name:match("^.+%.([^.]+)$") or ""
+    end
+    function Tree:walk(node, fn, o)
+      local abort = fn(node)
+      if abort ~= nil then
+        return abort
+      end
+      local children = vim.tbl_values(node.children)
+      table.sort(children, function(a, b)
+        if a.dir ~= b.dir then
+          return a.dir
+        end
+        local ea, eb = ext(a), ext(b)
+        if ea ~= eb then
+          return ea < eb
+        end
+        return a.name < b.name
+      end)
+      for c, child in ipairs(children) do
+        child.last = c == #children
+        if child.dir and (child.open or (o and o.all)) then
+          abort = self:walk(child, fn, o)
+        else
+          abort = fn(child)
+        end
+        if abort then
+          return true
+        end
+      end
+      return false
+    end
+  end,
   keys = {
     { "<leader><space>", false },
     { "<leader>e", false },
