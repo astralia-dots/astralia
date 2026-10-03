@@ -8,6 +8,9 @@ return {
     {
         "folke/tokyonight.nvim",
         opts = {
+            -- Use the terminal's background instead of the colorscheme's
+            transparent = true,
+            styles = { sidebars = "transparent", floats = "transparent" },
             on_highlights = function(hl)
                 hl.WinSeparator = { fg = palette.accent }
                 hl.FloatBorder = { fg = palette.accent }
