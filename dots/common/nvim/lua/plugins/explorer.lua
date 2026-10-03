@@ -48,7 +48,7 @@ return {
         { "<leader><space>", false },
         { "<leader>e", false },
         {
-            "<C-S-e>",
+            "<C-b>",
             function()
                 -- Open -> focus if open but unfocused -> close if focused
                 local p = Snacks.picker.get({ source = "explorer" })[1]
@@ -104,6 +104,7 @@ return {
                                 ["<M-Left>"] = "explorer_close_all",
                                 ["<BS>"] = false,
                                 ["<C-n>"] = "explorer_add",
+                                ["<C-b>"] = "close",
                             },
                         },
                     },
