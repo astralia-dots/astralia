@@ -5,7 +5,10 @@
 command -v hyprctl &>/dev/null || exit 1
 
 GLOBAL="false"
-[[ "$1" == "gb" ]] && { GLOBAL="true"; shift; }
+[[ "$1" == "gb" ]] && {
+    GLOBAL="true"
+    shift
+}
 
 # Convert args to Lua literals
 _lua_lit() { [[ "$1" =~ ^-?[0-9]+$ ]] && echo "$1" || echo "'${1//\'/}'"; }
@@ -13,16 +16,19 @@ _lua_lit() { [[ "$1" =~ ^-?[0-9]+$ ]] && echo "$1" || echo "'${1//\'/}'"; }
 _eval() { hyprctl eval "require('utils.tiling').$1" >/dev/null; }
 
 case "$1" in
-    fw) _eval "fw($(_lua_lit "$2"), { global = $GLOBAL })" ;;
-    mw)
-        follow="true"
-        [[ "$2" == "q" ]] && { follow="false"; shift; }
-        addr="nil"
-        [[ -n "$3" ]] && addr="$(_lua_lit "$3")"
-        _eval "mw($(_lua_lit "$2"), { follow = $follow, address = $addr, global = $GLOBAL })"
-        ;;
-    cw) _eval "cw($([[ -n "$2" ]] && _lua_lit "$2"))" ;;
-    mi) _eval "mi($(_lua_lit "$2"), { global = $GLOBAL })" ;;
-    sw) _eval "sw($(_lua_lit "$2"), { global = $GLOBAL })" ;;
-    *) echo "usage: hyprtile [gb] <cw|fw|mi|mw|sw> [args]" >&2 ;;
+fw) _eval "fw($(_lua_lit "$2"), { global = $GLOBAL })" ;;
+mw)
+    follow="true"
+    [[ "$2" == "q" ]] && {
+        follow="false"
+        shift
+    }
+    addr="nil"
+    [[ -n "$3" ]] && addr="$(_lua_lit "$3")"
+    _eval "mw($(_lua_lit "$2"), { follow = $follow, address = $addr, global = $GLOBAL })"
+    ;;
+cw) _eval "cw($([[ -n "$2" ]] && _lua_lit "$2"))" ;;
+mi) _eval "mi($(_lua_lit "$2"), { global = $GLOBAL })" ;;
+sw) _eval "sw($(_lua_lit "$2"), { global = $GLOBAL })" ;;
+*) echo "usage: hyprtile [gb] <cw|fw|mi|mw|sw> [args]" >&2 ;;
 esac

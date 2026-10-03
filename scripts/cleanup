@@ -29,8 +29,16 @@ sudo pacman -Scc --noconfirm
 # CLEAR AUR HELPER CACHES
 # ==========================================
 log "Clearing AUR helper caches..."
-command -v paru &>/dev/null && { echo "Cleaning paru cache..."; paru -Scc --noconfirm; rm -rf "$HOME/.cache/paru/"{clone,diff}/* 2>/dev/null; }
-command -v yay &>/dev/null && { echo "Cleaning yay cache..."; yay -Scc --noconfirm; rm -rf "$HOME/.cache/yay"/* 2>/dev/null; }
+command -v paru &>/dev/null && {
+    echo "Cleaning paru cache..."
+    paru -Scc --noconfirm
+    rm -rf "$HOME/.cache/paru/"{clone,diff}/* 2>/dev/null
+}
+command -v yay &>/dev/null && {
+    echo "Cleaning yay cache..."
+    yay -Scc --noconfirm
+    rm -rf "$HOME/.cache/yay"/* 2>/dev/null
+}
 
 # ==========================================
 # VACUUM SYSTEMD JOURNAL
@@ -63,7 +71,10 @@ rm -rf "$HOME/.cache/thumbnails"/* "$HOME/.local/share/Trash"/* 2>/dev/null
 # ==========================================
 # REMOVE UNUSED FLATPAK RUNTIMES
 # ==========================================
-command -v flatpak &>/dev/null && { log "Removing unused Flatpak runtimes..."; flatpak uninstall --unused -y; }
+command -v flatpak &>/dev/null && {
+    log "Removing unused Flatpak runtimes..."
+    flatpak uninstall --unused -y
+}
 
 # ==========================================
 # FINAL DISK USAGE

@@ -16,7 +16,7 @@ _cmd=""
 _die() {
     local message="$1"
     echo "ERROR: $message" >&2
-    
+
     if command -v notify-send >/dev/null 2>&1; then
         notify-send "Keqing Error" "$message" 2>/dev/null || true
     fi
@@ -34,13 +34,13 @@ _notify() {
     local title="$1"
     local message="${2:-}"
     [[ -n "$message" ]] || message="$title"
-    
+
     echo "$title: $message"
     command -v notify-send >/dev/null 2>&1 && notify-send "$title" "$message" 2>/dev/null || true
 }
 
 _help() {
-cat <<'EOF'
+    cat <<'EOF'
     Keqing Helper Tool
     Usage: keqing [--]<command> [args]
 
@@ -89,12 +89,24 @@ name() {
 
 [[ -f "$_SELF_DIR/lib/actions" ]] && source "$_SELF_DIR/lib/actions"
 
-[[ $# -eq 0 ]] && { _help; exit 0; }
+[[ $# -eq 0 ]] && {
+    _help
+    exit 0
+}
 
 case "${1:-}" in
-    --help|help) _help; exit 0 ;;
-    --*) _cmd="${1#--}"; shift ;;
-    *) _cmd="$1"; shift ;;
+--help | help)
+    _help
+    exit 0
+    ;;
+--*)
+    _cmd="${1#--}"
+    shift
+    ;;
+*)
+    _cmd="$1"
+    shift
+    ;;
 esac
 
 [[ -n "$_cmd" ]] || _die "expected: keqing [--]<command> [args]"

@@ -1,13 +1,22 @@
 set -euo pipefail
 
-[[ "$EUID" -ne 0 ]] || { echo "Run as your regular user, not root."; exit 1; }
+[[ "$EUID" -ne 0 ]] || {
+    echo "Run as your regular user, not root."
+    exit 1
+}
 
 R="$(cd "$S/.." && pwd)"
 
-die() { echo "error: $*" >&2; exit 1; }
+die() {
+    echo "error: $*" >&2
+    exit 1
+}
 
 [[ "$(dirname "$R")" == "$HOME" ]] || die "Project must be cloned directly into \$HOME (found: $R)"
-step() { echo; echo "==> $*"; }
+step() {
+    echo
+    echo "==> $*"
+}
 
 source "$R/setup/lib/gpu.sh"
 source "$S/lib/packages.sh"
@@ -30,7 +39,8 @@ fi
 step "Installing packages + GPU drivers"
 pkgs=()
 for group in CORE SESSION COMPOSITOR AUDIO CONNECTIVITY INPUT FONT DESKTOP CLI DEV AUR; do
-    ref="${group}_PKGS[@]"; pkgs+=("${!ref}")
+    ref="${group}_PKGS[@]"
+    pkgs+=("${!ref}")
 done
 
 [[ "$(uname -r)" =~ -arch[0-9] ]] && dkms="" || dkms="-dkms"
@@ -40,7 +50,7 @@ if $has_nvidia; then
     pkgs+=(nvidia-utils egl-wayland)
 fi
 { $has_amd || $has_intel; } && pkgs+=(mesa)
-$has_amd   && pkgs+=(vulkan-radeon libva-mesa-driver)
+$has_amd && pkgs+=(vulkan-radeon libva-mesa-driver)
 $has_intel && pkgs+=(vulkan-intel intel-media-driver)
 $has_nvidia || $has_amd || $has_intel || echo "GPU not detected, skipping driver installation"
 
@@ -58,7 +68,8 @@ if [[ -d /sys/firmware/efi ]]; then
     mountpoint -q /boot/efi && efi_dir=/boot/efi || efi_dir=/boot
     sudo grub-install --target=x86_64-efi --efi-directory="$efi_dir" --bootloader-id=GRUB
 else # BIOS (GPT needs bios_grub partition)
-    src=$(findmnt -no SOURCE /); src=${src%%\[*}
+    src=$(findmnt -no SOURCE /)
+    src=${src%%\[*}
     sudo grub-install --target=i386-pc "/dev/$(lsblk -no PKNAME "$src" | head -1)"
 fi
 sudo grub-mkconfig -o /boot/grub/grub.cfg
@@ -66,7 +77,7 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 step "Running update modules" # grub theme not included: needs a resolution
 sudo ln -sf "$R/update" /usr/local/bin/update
 mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/astralia"
-echo "$STOW_SESSION" > "${XDG_STATE_HOME:-$HOME/.local/state}/astralia/session"
+echo "$STOW_SESSION" >"${XDG_STATE_HOME:-$HOME/.local/state}/astralia/session"
 "$R/update" all
 
 step "Installing VS Code extensions"

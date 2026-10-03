@@ -13,7 +13,7 @@ if [[ -z "$current_network" ]]; then
     if [[ -z "$current_network" ]]; then
         current_network=$(nmcli -t -f NAME,TYPE connection show --active | head -n 1 | cut -d: -f1)
     fi
-    
+
     if [[ -z "$current_network" ]]; then
         echo "Error: No connection name provided and no active connection detected."
         echo "Usage: $0 [connection_name] [\"dns_servers\"]"

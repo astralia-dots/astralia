@@ -20,8 +20,8 @@ sleep 0.2
 # Escape. Poll for hyprpicker dying and kill slurp too so one Escape
 # dismisses both (can't `wait` on it here, it's a sibling not a child).
 (
-  while kill -0 "$freeze_pid" 2>/dev/null; do sleep 0.1; done
-  pkill -x slurp
+    while kill -0 "$freeze_pid" 2>/dev/null; do sleep 0.1; done
+    pkill -x slurp
 ) &
 watcher_pid=$!
 

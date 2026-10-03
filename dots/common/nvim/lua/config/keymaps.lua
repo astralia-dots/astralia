@@ -1,27 +1,27 @@
 -- Close file buffers to dashboard; dashboard first or bufdelete fills the window with Claude
 vim.keymap.set("n", "<leader>ba", function()
-  local function is_file(b)
-    return vim.bo[b].buftype == ""
-  end
-  local wins = vim.tbl_filter(function(w)
-    return vim.api.nvim_win_get_config(w).relative == "" and is_file(vim.api.nvim_win_get_buf(w))
-  end, vim.api.nvim_tabpage_list_wins(0))
-  if not wins[1] then
-    return Snacks.notify.warn("No editor window for the dashboard")
-  end
-  for i = 2, #wins do
-    vim.api.nvim_win_close(wins[i], false)
-  end
-  Snacks.dashboard({ win = wins[1] })
-  Snacks.bufdelete.delete({ filter = is_file })
+    local function is_file(b)
+        return vim.bo[b].buftype == ""
+    end
+    local wins = vim.tbl_filter(function(w)
+        return vim.api.nvim_win_get_config(w).relative == "" and is_file(vim.api.nvim_win_get_buf(w))
+    end, vim.api.nvim_tabpage_list_wins(0))
+    if not wins[1] then
+        return Snacks.notify.warn("No editor window for the dashboard")
+    end
+    for i = 2, #wins do
+        vim.api.nvim_win_close(wins[i], false)
+    end
+    Snacks.dashboard({ win = wins[1] })
+    Snacks.bufdelete.delete({ filter = is_file })
 end, { desc = "Close All Buffers (Dashboard)" })
 
 -- Move split border in arrow direction
 local function nudge(dir)
-  return function()
-    local right_edge = vim.fn.winnr("l") == vim.fn.winnr()
-    vim.cmd("vertical resize " .. (((dir == "left") == right_edge) and "+2" or "-2"))
-  end
+    return function()
+        local right_edge = vim.fn.winnr("l") == vim.fn.winnr()
+        vim.cmd("vertical resize " .. (((dir == "left") == right_edge) and "+2" or "-2"))
+    end
 end
 vim.keymap.set({ "n", "t" }, "<C-Left>", nudge("left"), { desc = "Move Split Border Left" })
 vim.keymap.set({ "n", "t" }, "<C-Right>", nudge("right"), { desc = "Move Split Border Right" })
